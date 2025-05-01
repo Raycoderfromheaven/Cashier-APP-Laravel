@@ -82,7 +82,7 @@
                 <div class="col-12">
                     <a href="{{ route('home') }}" 
                     wire:navigate class="btn {{ request()->routeIs('home') ? 'btn-primary' : 'btn-outline-primary' }}" >
-                    Dahsboard
+                    Dashboard
                     </a>
                     @if(Auth::user()->role == 'admin')
                     <a href="{{ route('user') }}" 
