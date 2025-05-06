@@ -27,10 +27,21 @@
         <div class="row">
             <div class="col-12">
                 @if($pilihanMenu == 'lihat')
-                <!-- Product List Card -->
+                <!-- Product List Card with Search and Pagination -->
                 <div class="card border-0 shadow-sm">
                     <div class="card-header bg-white border-0 py-3">
-                        <h5 class="m-0"><i class="fas fa-boxes me-2"></i>Semua Produk</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="m-0"><i class="fas fa-boxes me-2"></i>Semua Produk</h5>
+                            <div class="input-group" style="width: 300px;">
+                                <input type="text" 
+                                       class="form-control form-control-sm rounded-pill" 
+                                       placeholder="Cari produk..." 
+                                       wire:model.live.debounce.300ms="search">
+                                <button class="btn btn-sm btn-outline-secondary rounded-pill" type="button">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
@@ -48,7 +59,7 @@
                                 <tbody>
                                     @foreach ($semuaProduk as $produk)
                                     <tr class="position-relative" style="transition: all 0.2s;">
-                                        <td class="ps-4">{{ $loop->iteration }}</td>
+                                        <td class="ps-4">{{ ($semuaProduk->currentPage() - 1) * $semuaProduk->perPage() + $loop->iteration }}</td>
                                         <td><span class="badge bg-secondary">{{ $produk->kode }}</span></td>
                                         <td>{{ $produk->nama }}</td>
                                         <td>Rp {{ number_format($produk->harga, 0, ',', '.') }}</td>
@@ -73,6 +84,52 @@
                                     @endforeach
                                 </tbody>
                             </table>
+                        </div>
+                        
+                        <!-- Pagination Section -->
+                        <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                            <div class="text-muted small">
+                                Menampilkan {{ $semuaProduk->firstItem() }} - {{ $semuaProduk->lastItem() }} dari {{ $semuaProduk->total() }} produk
+                            </div>
+                            
+                            <nav>
+                                <ul class="pagination pagination-sm mb-0">
+                                    <!-- Previous Page Link -->
+                                    @if ($semuaProduk->onFirstPage())
+                                        <li class="page-item disabled">
+                                            <span class="page-link rounded-pill mx-1">&laquo;</span>
+                                        </li>
+                                    @else
+                                        <li class="page-item">
+                                            <button wire:click="previousPage" class="page-link rounded-pill mx-1">&laquo;</button>
+                                        </li>
+                                    @endif
+
+                                    <!-- Pagination Elements -->
+                                    @foreach ($semuaProduk->links()->elements[0] as $page => $url)
+                                        @if ($page == $semuaProduk->currentPage())
+                                            <li class="page-item active" aria-current="page">
+                                                <span class="page-link rounded-pill mx-1">{{ $page }}</span>
+                                            </li>
+                                        @else
+                                            <li class="page-item">
+                                                <button wire:click="gotoPage({{ $page }})" class="page-link rounded-pill mx-1">{{ $page }}</button>
+                                            </li>
+                                        @endif
+                                    @endforeach
+
+                                    <!-- Next Page Link -->
+                                    @if ($semuaProduk->hasMorePages())
+                                        <li class="page-item">
+                                            <button wire:click="nextPage" class="page-link rounded-pill mx-1">&raquo;</button>
+                                        </li>
+                                    @else
+                                        <li class="page-item disabled">
+                                            <span class="page-link rounded-pill mx-1">&raquo;</span>
+                                        </li>
+                                    @endif
+                                </ul>
+                            </nav>
                         </div>
                     </div>
                 </div>
